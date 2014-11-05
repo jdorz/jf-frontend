@@ -1,0 +1,9 @@
+angular.module('jf')
+.service 'Events', (CONFIG)->
+	class Events extends EventEmitter2
+	events = new Events()
+
+	if CONFIG.debug
+		window.Events = events
+
+	events

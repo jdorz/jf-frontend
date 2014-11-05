@@ -1,0 +1,56 @@
+angular.module('jf')
+.controller 'AlertsCtrl', !($scope, CONFIG, Events, $timeout)->
+	
+	if CONFIG.debug
+		window.alertScope = $scope
+
+	lastMessageId = 0
+	function generateId
+		lastMessageId++
+		return lastMessageId
+
+	$scope.alerts = [
+		# { type: 'danger', msg: 'Oh snap! Change a few things up and try submitting again.' },
+		# { type: 'success', msg: 'Well done! You successfully read this important alert message.' }
+	]
+
+	$scope.addAlert = ->
+		$scope.alerts.push({msg: 'Another alert!'})
+
+	$scope.closeAlert = (index)->
+		if index >= 0
+			$scope.alerts.splice(index, 1)
+
+	# adds messsage and returns id of the message
+	function addMessage(msg, type || \success)
+		message = {
+			type: type
+			msg: msg
+			id: generateId()
+		}
+		$scope.alerts.push(message)
+		return message.id
+
+	function getMessageIndexById(id)
+		_.findIndex $scope.alerts, (msg)-> id is msg.id
+
+	function addMessageAutoClose(msg, type || \success)
+		id = addMessage msg, type
+		$timeout (-> $scope.closeAlert getMessageIndexById(id)), CONFIG.common.alertAutoCloseTimeout
+
+	Events.on "ajax:message_persistent", (msg)->
+		addMessage msg
+
+	Events.on "ajax:message", (msg)->
+		addMessageAutoClose msg, \success
+
+	Events.on "ajax:message_close", !(index)->
+		$scope.closeAlert(index)
+
+	errorHandler = (msg)->
+		if msg
+			addMessageAutoClose msg, \danger
+
+	Events.on "ajax:error", errorHandler
+	Events.on "error", errorHandler
+

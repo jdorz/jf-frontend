@@ -1,0 +1,68 @@
+angular.module('jf')
+# inject Messages so that they get initialized
+.controller 'ApplicationCtrl', !($scope, CONFIG, Authorization, Session, $location, AjaxAction, Messages, DwrLoader)->
+
+	if CONFIG.debug
+		window.appScope = $scope
+
+	# alert(window.screen.availWidth+","+window.screen.availHeight)
+
+	# wire CONFIG to application scope
+	$scope.CONFIG = CONFIG
+
+	# add spinner
+	spinnerTarget = document.getElementById('spinner')
+	$scope.spinner = new Spinner(CONFIG.spinner).spin(spinnerTarget).stop()
+
+	function spinStart
+		console.log "spinStart"
+		$scope.spinner.spin(spinnerTarget)
+		# $scope.spinner = new Spinner(CONFIG.spinner).spin(spinnerTarget)
+
+	function spinStop
+		console.log "spinStop"
+		$scope.spinner.stop()
+
+	if CONFIG.debug
+		window.spinStart = spinStart
+		window.spinStop = spinStop
+
+	# setTimeout (-> $scope.spinner.spin(spinnerTarget)), 1000
+
+	# $scope.showMainSite = true
+
+	$scope.currentUser = null
+	# $scope.pendingRequest = true
+	$scope.setPendingRequest = !(pendingRequest)->
+		console.log("setPendingRequest ->", pendingRequest)
+		if pendingRequest
+			spinStart()
+		else
+			spinStop()
+
+	# setTimeout (-> console.log("asd"); $scope.setPendingRequest true), 1000
+
+
+	# wire $scope to Session
+	Session.applicationScope = $scope
+
+	$scope.$on "$locationChangeStart", !(event, next)->
+
+		console.log "next ------>", next
+		nextPath = new URI(next).resource()
+
+		# if not Authorization.isAuthorized $scope.currentUser, nextPath
+		# 	# event.preventDefault!
+		# 	$location.path CONFIG.common.loginPath
+
+		Authorization.isAuthorized nextPath, (isAuthorized)->
+			console.log "isAuthorized", isAuthorized, nextPath
+			if not isAuthorized
+				# event.preventDefault!
+				console.log "redirect --> "+CONFIG.common.loginPath+"?redirectPath="+nextPath
+				$location.path(CONFIG.common.loginPath).search {redirectPath: encodeURIComponent(nextPath)}
+
+	# $scope.$on "$locationChangeSuccess", !(event, next)->
+	# 	if redirect.length > 0
+			# $route.current = CONFIG.common.loginPath
+	# 		$location.path redirect.pop!

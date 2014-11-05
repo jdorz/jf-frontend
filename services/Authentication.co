@@ -1,0 +1,30 @@
+angular.module('jf')
+.service 'Authentication', (AjaxAction, Session)->
+
+	@authenticate = (credentials)->
+		dfd = $.Deferred()
+		AjaxAction()
+		.post("login")
+		.withData(credentials)
+		.done ->
+			Session.setUsername(credentials.username)
+			console.log "Session (Authentication)", Session.getUsername()
+			dfd.resolve "OK"
+		.fail (error)->
+			dfd.reject error
+
+		dfd
+
+	@logout = ->
+		dfd = $.Deferred()
+		AjaxAction().post("logout")
+		.done ->
+			Session.setUsername(null)
+			dfd.resolve "OK"
+		.fail (error)->
+			alert arguments
+			dfd.reject error
+
+		dfd
+
+	return this

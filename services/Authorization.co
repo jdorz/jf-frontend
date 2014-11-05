@@ -1,0 +1,46 @@
+angular.module('jf')
+.service 'Authorization', (CONFIG, AjaxAction, Session)->
+
+	isLoggedInDfd = $.Deferred()
+
+	@check = !~>
+		# isLoggedInDfd := AjaxAction("is_logged_in", undefined, undefined, true).done (response)->
+		AjaxAction("is_logged_in")
+		.withRawResponse()
+		.done (response)->
+			if response.is_logged_in
+				Session.setUsername(response.username)
+				isLoggedInDfd.resolve(response.username)
+			else
+				isLoggedInDfd.reject()
+
+	# @authorizeAs = !(username)~>
+	# 	isLoggedInDfd := $.Deferred()
+	# 	isLoggedInDfd.resolve username
+
+	isAuthorized = (path)~>
+		if URI(path).path() is CONFIG.common.loginPath
+			console.log "AUTHORIZATION OK #path"
+			true
+		else
+			console.log "AUTHORIZATION FORBIDDEN #path"
+			false
+
+	@isAuthorized = (path, callback)->
+
+		console.log "Session (Authorization)", Session.getUsername()
+
+		if Session.getUsername() is not null
+			callback(true)
+		else
+			isLoggedInDfd
+			.done !-> callback(true)
+			.fail !->
+				if isAuthorized(path)
+					callback(true)
+				else
+					callback(false)
+
+	@check!
+
+	return this

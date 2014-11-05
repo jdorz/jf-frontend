@@ -1,0 +1,47 @@
+angular.module('jf').controller 'LoginCtrl', !($scope, AjaxAction, Authentication, $location, $routeParams, $timeout)->
+
+	# Cookie.create("JSESSIONID", "C3D1A3AB21F7FDE9B20BE8A31CD264A7", 365);
+	# $http.defaults.headers.common.Cookie = "JSESSIONID: C3D1A3AB21F7FDE9B20BE8A31CD264A7"
+	# headers =
+	# 	"Cookie": "JSESSIONID: C3D1A3AB21F7FDE9B20BE8A31CD264A7"
+
+
+	$scope.error = null
+
+	redirectPath = $location.search()["redirectPath"] or "/"
+	redirectPath = decodeURIComponent redirectPath
+	console.log "redirectPath = "+redirectPath
+	
+	redirect = (redirectPath)->
+		uri = URI(redirectPath)
+		console.log "redirect --> "+redirectPath+", path = "+uri.path()+", search = "+uri.search()
+		$timeout (->
+			l = $location.path(uri.path())
+			setSearch(l)
+		), 1000
+
+		function setSearch(location)
+			l = location.search({})
+
+			_.each uri.search(true), (v, k)->
+				l := l.search(k, v)
+
+	$scope.login = (credentials)->
+		Authentication.authenticate(credentials)
+		.done ->
+			# alert("Zalogowano: "+redirectPath)
+			$scope.success = "Zalogowano"
+			redirect redirectPath
+		.fail (error)->
+			# alert("Błąd: "+error)
+			$scope.error = error
+
+	$scope.logout = ->
+		Authentication.logout!
+		.done ->
+			$scope.success = "Wylogowano"
+			redirect "/login"
+		.fail (error)->
+			$scope.error = error
+
+

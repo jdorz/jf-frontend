@@ -1,0 +1,22 @@
+angular.module('jf')
+.service 'Session', ->
+	username = null
+
+	# scope from ApplicationCtrl
+	# it is wiried to this variable from ApplicationCtrl
+	@applicationScope = {
+		currentUser: null
+		setPendingRequest: ->
+	}
+
+	# @getPendingRequest = (pendingRequest)~> @applicationScope.pendingRequest
+	@setPendingRequest = !(pendingRequest)~>
+		@applicationScope.setPendingRequest pendingRequest
+		# @applicationScope.pendingRequest = pendingRequest
+
+	@getUsername = -> username
+	@setUsername = !(_username)~>
+		username := _username
+		@applicationScope.currentUser = _username
+
+	return this

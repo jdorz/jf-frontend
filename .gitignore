@@ -1,0 +1,17 @@
+.vagrant
+.git
+node_modules
+frontend/npm-debug.log
+frontend/dist
+frontend/.tmp
+frontend/.sass-cache
+frontend/app/bower_components
+frontend/app/scripts/templates.js
+frontend/dist
+frontend/static/*
+frontend/nginx/conf/ssl
+!frontend/static/index.html
+misc/
+tmp/
+backend
+*.sublime-*

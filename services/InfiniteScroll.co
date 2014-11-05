@@ -1,0 +1,95 @@
+angular.module('jf')
+.factory 'InfiniteScroll', (AjaxAction)->
+	InfiniteScroll = (targetName, limit, resultField || "results", columnField || "columns")->
+		# url path name to resolve from config
+		this.targetName = targetName
+
+		this.limit = limit
+		this.resultField = resultField
+		this.columnField = columnField
+		# this.idColumnName = \id
+		this.searchRequest = {}
+
+		this.reset()
+
+	InfiniteScroll.prototype.viaQueryParams = ->
+		this._viaQueryParams = true
+		this
+
+	InfiniteScroll.prototype.withIdColumnName = (idColumnName)->
+		this.idColumnName = idColumnName
+		this
+
+	InfiniteScroll.prototype.withNoResultsCallback = (callback)->
+		if typeof callback is \function
+			this.noResultsCallback = callback
+		this
+
+	InfiniteScroll.prototype.reset = !->
+		this.items = []
+		this.busy = false
+		this.columns = []
+		this.after = ''
+		this.searchRequest.limit = this.limit
+		this.searchRequest.offset = -this.limit
+
+	InfiniteScroll.prototype.getSearchRequest = -> @searchRequest
+
+	InfiniteScroll.prototype.sortBy = !(column)->
+		@reset!
+
+		sortField = column.property.replace /document_/, ""
+		if @searchRequest.sortField is sortField
+			@searchRequest.ascending = !@searchRequest.ascending
+		else
+			@searchRequest.ascending = false
+
+		@searchRequest.sortField = sortField
+
+		@nextPage!
+		# @reset!
+		# console.log column
+		# @searchRequest.sortField = column
+
+	InfiniteScroll.prototype.sortByColumns = (result)->
+		id = null
+		ret = _.map @columns, (column)~>
+			innerRet = result[column.property]
+			# if column.property is @idColumnName
+			# 	id := innerRet
+			# if innerRet
+			# 	innerRet.column = column
+			innerRet
+
+		ret.resultObject = result
+
+		if result.id then ret.id = result.id
+		ret
+
+	InfiniteScroll.prototype.nextPage = ->
+		if this.busy then return
+		this.busy = true
+
+		@searchRequest.offset += @searchRequest.limit
+
+		ajax = if @_viaQueryParams
+			AjaxAction().get(this.targetName, @searchRequest)
+		else
+			AjaxAction().post(this.targetName).withQueryParams(@searchRequest)
+
+		ajax
+			.done (data)~>
+				this.columns = data[@columnField]
+
+				items = data@@[@resultField].map ~> @sortByColumns(it)
+
+				if @searchRequest.offset is 0 and items.length is 0
+					this.noResultsCallback?!
+
+				# console.log items
+
+				_.each items, (item)~>
+					this.items.push item
+				this.busy = false
+	      
+	return InfiniteScroll
