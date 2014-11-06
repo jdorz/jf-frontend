@@ -1,0 +1,22 @@
+{
+  "name": "jf-frontend",
+  "version": "0.1.0",
+  "authors": [
+    "Jan Swiecki <jan.swiecki@gmail.com>"
+  ],
+  "main": "app.js",
+  "keywords": [
+    "angular"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "ngInfiniteScroll": "~1.1.2"
+  }
+}
