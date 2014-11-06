@@ -4,7 +4,23 @@
   "authors": [
     "Jan Swiecki <jan.swiecki@gmail.com>"
   ],
-  "main": "app.js",
+  "main": [
+    "app.js",
+    "controllers/alerts.js",
+    "controllers/application.js",
+    "controllers/login.js",
+    "lib/SecondLevelDomains.js",
+    "lib/spin.min.js",
+    "lib/URI.js",
+    "services/AjaxAction.js",
+    "services/Authentication.js",
+    "services/Authorization.js",
+    "services/Events.js",
+    "services/Helper.js",
+    "services/InfiniteScroll.js",
+    "services/JQuery.js",
+    "services/Session.js"
+  ],
   "keywords": [
     "angular"
   ],
