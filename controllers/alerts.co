@@ -44,6 +44,9 @@ angular.module('jf')
 	Events.on "ajax:message", (msg)->
 		addMessageAutoClose msg, \success
 
+	Events.on "alerts:message", (msg)->
+		addMessageAutoClose msg, \success
+
 	Events.on "ajax:message_close", !(index)->
 		$scope.closeAlert(index)
 

@@ -50,6 +50,9 @@
     Events.on("ajax:message", function(msg){
       return addMessageAutoClose(msg, 'success');
     });
+    Events.on("alerts:message", function(msg){
+      return addMessageAutoClose(msg, 'success');
+    });
     Events.on("ajax:message_close", function(index){
       $scope.closeAlert(index);
     });
