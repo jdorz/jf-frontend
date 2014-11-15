@@ -1,8 +1,14 @@
 (function(){
   angular.module('jf').controller('ApplicationCtrl', function($scope, CONFIG, Authorization, Session, $location, AjaxAction, Messages, DwrLoader, ConnectionChecker){
     var spinnerTarget;
-    if (CONFIG.checkBackendConnection) {
-      ConnectionChecker.start("/ping");
+    if (CONFIG.connectionChecker.enabled) {
+      ConnectionChecker.start();
+      Events.on("connectionChecker:fail", function(){
+        return console.log("APP failed to connect to backend");
+      });
+      Events.on("connectionChecker:ok", function(){
+        return console.log("APP reconnected to backend");
+      });
     }
     if (CONFIG.debug) {
       window.appScope = $scope;
