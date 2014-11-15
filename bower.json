@@ -1,6 +1,6 @@
 {
   "name": "jf",
-  "version": "0.1.2",
+  "version": "0.1.2-1",
   "authors": [
     "Jan Swiecki <jan.swiecki@gmail.com>"
   ],
@@ -19,7 +19,8 @@
     "services/Helper.js",
     "services/InfiniteScroll.js",
     "services/JQuery.js",
-    "services/Session.js"
+    "services/Session.js",
+    "services/ConnectionChecker.js"
   ],
   "keywords": [
     "angular"
