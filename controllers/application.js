@@ -1,6 +1,9 @@
 (function(){
-  angular.module('jf').controller('ApplicationCtrl', function($scope, CONFIG, Authorization, Session, $location, AjaxAction, Messages, DwrLoader){
+  angular.module('jf').controller('ApplicationCtrl', function($scope, CONFIG, Authorization, Session, $location, AjaxAction, Messages, DwrLoader, ConnectionChecker){
     var spinnerTarget;
+    if (CONFIG.checkBackendConnection) {
+      ConnectionChecker.start("/ping");
+    }
     if (CONFIG.debug) {
       window.appScope = $scope;
     }

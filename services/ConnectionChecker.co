@@ -1,0 +1,43 @@
+angular.module('jf')
+.service 'ConnectionChecker', (AjaxAction, Events, CONFIG)->
+
+	enabled = CONFIG.connectionChecker?.enabled || false
+	timeout = CONFIG.connectionChecker?.timeout || 4000
+	interval = CONFIG.connectionChecker?.interval || 4000
+	reconnectAttempts = CONFIG.connectionChecker?.reconnectAttempts || 3
+
+	function Checker()
+		this.loop = -1
+		this.state = true
+		this.reconnectAttempts = reconnectAttempts
+
+	Checker.prototype.check = ->
+		return AjaxAction.get("connectionChecker").withTimeout(timeout)
+
+	Checker.prototype.start = ->
+		if not enabled
+			return console.log("CONNECTIONCHECKER not enabled, cannot start")
+		this.intervalCallback!
+
+	Checker.prototype.intervalCallback = ->
+		if not enabled
+			console.log("CONNECTIONCHECKER not enabled, stopping iteration")
+			return clearTimeout(this.loop)
+
+		this.check()
+			.done ~>
+				console.log("CONNECTIONCHECKER ok")
+
+				if this.state is false
+					Events.emit "connectionChecker:ok"
+
+				this.state = true
+				this.loop = setTimeout (~> this.intervalCallback!), interval
+			.fail ->
+				console.log("CONNECTIONCHECKER error, cannot connect")
+				this.state = false
+				this.loop = setTimeout (~> this.intervalCallback!), interval
+				Events.emit "connectionChecker:fail"
+
+	Checker.prototype.stop = ->
+		clearTimeout this.loop

@@ -48,6 +48,7 @@ angular.module('jf')
 			this.name = prevAjaxAction.name;
 			this.method = prevAjaxAction.method;
 			this.pathParams = prevAjaxAction.pathParams;
+			this.timeout = prevAjaxAction.timeout;
 			this.config = prevAjaxAction.config;
 			this._request = prevAjaxAction._request;
 		} else {
@@ -56,6 +57,7 @@ angular.module('jf')
 			this.rawResponse = false;
 			this.name = "<undefined name>";
 			this.method = "get";
+			this.timeout = 30000;
 
 			// prevent making multiple requests with same AjaxAction instance
 			this._request = false;
@@ -119,6 +121,12 @@ angular.module('jf')
 		return ajaxAction;
 	}
 
+	AjaxAction.prototype.withTimeout = function(timeout) {
+		var ajaxAction = new AjaxAction(null, this);
+		ajaxAction.setTimeout(timeout);
+		return ajaxAction;
+	}
+
 	AjaxAction.prototype.withNameResolver = function(fn) {
 		var ajaxAction = new AjaxAction(null, this);
 		ajaxAction.setUrlFromName(fn);
@@ -154,7 +162,11 @@ angular.module('jf')
 	}
 
 	AjaxAction.prototype.setUrlFromName = function(fn) {
-		this.setUrlFromName = setUrlFromName;
+		this.urlFromName = setUrlFromName;
+	}
+
+	AjaxAction.prototype.setTimeout = function(timeout) {
+		this.timeout = timeout;
 	}
 
 	AjaxAction.prototype.setData = function(data) {
@@ -370,6 +382,7 @@ angular.module('jf')
 
 		angularOptions.url = options.url;
 		angularOptions.method = options.method;
+		angularOptions.timeout = options.timeout;
 
 		if(angularOptions.method !== "GET") {
 
