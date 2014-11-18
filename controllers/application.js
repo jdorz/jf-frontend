@@ -1,7 +1,7 @@
 (function(){
   angular.module('jf').controller('ApplicationCtrl', function($scope, CONFIG, Authorization, Session, $location, AjaxAction, Messages, DwrLoader, ConnectionChecker){
-    var spinnerTarget;
-    if (CONFIG.connectionChecker.enabled) {
+    var ref$, spinnerTarget;
+    if ((ref$ = CONFIG.connectionChecker) != null && ref$.enabled) {
       ConnectionChecker.start();
       Events.on("connectionChecker:fail", function(){
         return console.log("APP failed to connect to backend");

@@ -2,7 +2,7 @@ angular.module('jf')
 # inject Messages so that they get initialized
 .controller 'ApplicationCtrl', !($scope, CONFIG, Authorization, Session, $location, AjaxAction, Messages, DwrLoader, ConnectionChecker)->
 
-	if CONFIG.connectionChecker.enabled
+	if CONFIG.connectionChecker?.enabled
 		ConnectionChecker.start()
 
 		Events.on "connectionChecker:fail", ->
