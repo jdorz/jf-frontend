@@ -1,6 +1,6 @@
 {
   "name": "jf",
-  "version": "0.1.2-3",
+  "version": "0.1.2-4",
   "authors": [
     "Jan Swiecki <jan.swiecki@gmail.com>"
   ],
@@ -8,7 +8,7 @@
     "app.js",
     "controllers/alerts.js",
     "controllers/application.js",
-    "controllers/login.js",
+    "controllers/login.js"
     "lib/SecondLevelDomains.js",
     "lib/spin.min.js",
     "lib/URI.js",

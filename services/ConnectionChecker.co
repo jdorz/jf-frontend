@@ -41,3 +41,6 @@ angular.module('jf')
 
 	Checker.prototype.stop = ->
 		clearTimeout this.loop
+
+
+	return new Checker()

@@ -44,8 +44,9 @@
         return Events.emit("connectionChecker:fail");
       });
     };
-    return Checker.prototype.stop = function(){
+    Checker.prototype.stop = function(){
       return clearTimeout(this.loop);
     };
+    return new Checker();
   });
 }).call(this);
