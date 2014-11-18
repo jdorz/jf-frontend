@@ -188,13 +188,15 @@ angular.module('jf')
 	}
 
 	AjaxAction.prototype.addActionMessage = function(message, isError) {
-		Events.emit(isError === true ? "ajax:error" : "ajax:message", message)
+		var isHtml = !!message.match(/^<html>/);
+
+		Events.emit(isError === true ? "ajax:error" : "ajax:message", message, isHtml);
 
 		isError ? error(message) : log(message);
 	}
 
 	AjaxAction.prototype.addActionError = function(message) {
-		if(this.DEBUG) message += " [js]";
+		// if(this.DEBUG) message += " [js]";
 		return this.addActionMessage(message, true);
 	}
 
@@ -272,6 +274,7 @@ angular.module('jf')
 		var params = {
 			method: this.method.toUpperCase(),
 			params: this.queryParams,
+			timeout: this.timeout,
 			url: url.toString()
 		};
 
@@ -330,8 +333,11 @@ angular.module('jf')
 			ApplicationState.setPendingRequest(false);
 
 		}).fail(function(errorMessage){
+			console.log("ERROR AJAX", arguments);
 			error(errorMessage);
-			self.addActionError(errorMessage);
+			if(errorMessage) {
+				self.addActionError(errorMessage);
+			}
 			ApplicationState.setPendingRequest(false);
 
 			dfd.reject(errorMessage);
@@ -408,6 +414,7 @@ angular.module('jf')
 			// if(options.params) angularOptions.params = options.params;
 		}
 
+		console.log("angularOptions", angularOptions);
 		var http = $http(angularOptions);
 
 		http.success(function(data, status, headers, config){

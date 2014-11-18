@@ -33,11 +33,13 @@ angular.module('jf')
 
 				this.state = true
 				this.loop = setTimeout (~> this.intervalCallback!), interval
-			.fail ->
+			.fail ~>
 				console.log("CONNECTIONCHECKER error, cannot connect")
 				this.state = false
 				this.loop = setTimeout (~> this.intervalCallback!), interval
 				Events.emit "connectionChecker:fail"
+
+				return false
 
 	Checker.prototype.stop = ->
 		clearTimeout this.loop

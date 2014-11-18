@@ -1,15 +1,6 @@
 (function(){
   angular.module('jf').controller('ApplicationCtrl', function($scope, CONFIG, Authorization, Session, $location, AjaxAction, Messages, DwrLoader, ConnectionChecker){
-    var ref$, spinnerTarget;
-    if ((ref$ = CONFIG.connectionChecker) != null && ref$.enabled) {
-      ConnectionChecker.start();
-      Events.on("connectionChecker:fail", function(){
-        return console.log("APP failed to connect to backend");
-      });
-      Events.on("connectionChecker:ok", function(){
-        return console.log("APP reconnected to backend");
-      });
-    }
+    var spinnerTarget, ref$;
     if (CONFIG.debug) {
       window.appScope = $scope;
     }
@@ -52,5 +43,16 @@
         }
       });
     });
+    if ((ref$ = CONFIG.connectionChecker) != null && ref$.enabled) {
+      ConnectionChecker.start();
+      Events.on("connectionChecker:fail", function(){
+        console.log("APP failed to connect to backend");
+        return Events.emit("alerts:error", CONFIG.text.cannotConnectToBackend);
+      });
+      Events.on("connectionChecker:ok", function(){
+        console.log("APP reconnected to backend");
+        return Events.emit("alerts:message", CONFIG.text.connectedToBackendSuccessfully);
+      });
+    }
   });
 }).call(this);

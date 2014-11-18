@@ -11,7 +11,7 @@
       return this.reconnectAttempts = reconnectAttempts;
     }
     Checker.prototype.check = function(){
-      return AjaxAction.get("connectionChecker").withTimeout(timeout);
+      return AjaxAction().get("connectionChecker").withTimeout(timeout);
     };
     Checker.prototype.start = function(){
       if (!enabled) {
@@ -35,13 +35,13 @@
           return this$.intervalCallback();
         }, interval);
       }).fail(function(){
-        var this$ = this;
         console.log("CONNECTIONCHECKER error, cannot connect");
-        this.state = false;
-        this.loop = setTimeout(function(){
+        this$.state = false;
+        this$.loop = setTimeout(function(){
           return this$.intervalCallback();
         }, interval);
-        return Events.emit("connectionChecker:fail");
+        Events.emit("connectionChecker:fail");
+        return false;
       });
     };
     Checker.prototype.stop = function(){

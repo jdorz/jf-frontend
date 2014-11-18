@@ -20,7 +20,7 @@
         return $scope.alerts.splice(index, 1);
       }
     };
-    function addMessage(msg, type){
+    function addMessage(msg, type, isHtml){
       var message;
       type || (type = 'success');
       message = {
@@ -36,32 +36,32 @@
         return id === msg.id;
       });
     }
-    function addMessageAutoClose(msg, type){
+    function addMessageAutoClose(msg, type, isHtml){
       var id;
       type || (type = 'success');
-      id = addMessage(msg, type);
+      id = addMessage(msg, type, isHtml);
       return $timeout(function(){
         return $scope.closeAlert(getMessageIndexById(id));
       }, CONFIG.common.alertAutoCloseTimeout);
     }
-    Events.on("ajax:message_persistent", function(msg){
-      return addMessage(msg);
+    Events.on("ajax:message_persistent", function(msg, isHtml){
+      return addMessage(msg, isHtml);
     });
-    Events.on("ajax:message", function(msg){
-      return addMessageAutoClose(msg, 'success');
+    Events.on("ajax:message", function(msg, isHtml){
+      return addMessageAutoClose(msg, 'success', isHtml);
     });
-    Events.on("alerts:message", function(msg){
-      return addMessageAutoClose(msg, 'success');
+    Events.on("alerts:message", function(msg, isHtml){
+      return addMessageAutoClose(msg, 'success', isHtml);
     });
     Events.on("ajax:message_close", function(index){
       $scope.closeAlert(index);
     });
-    errorHandler = function(msg){
+    errorHandler = function(msg, isHtml){
       if (msg) {
-        return addMessageAutoClose(msg, 'danger');
+        return addMessageAutoClose(msg, 'danger', isHtml);
       }
     };
     Events.on("ajax:error", errorHandler);
-    Events.on("error", errorHandler);
+    Events.on("alerts:error", errorHandler);
   });
 }).call(this);

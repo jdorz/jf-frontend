@@ -2,14 +2,6 @@ angular.module('jf')
 # inject Messages so that they get initialized
 .controller 'ApplicationCtrl', !($scope, CONFIG, Authorization, Session, $location, AjaxAction, Messages, DwrLoader, ConnectionChecker)->
 
-	if CONFIG.connectionChecker?.enabled
-		ConnectionChecker.start()
-
-		Events.on "connectionChecker:fail", ->
-			console.log "APP failed to connect to backend"
-		Events.on "connectionChecker:ok", ->
-			console.log "APP reconnected to backend"
-
 
 	if CONFIG.debug
 		window.appScope = $scope
@@ -75,3 +67,15 @@ angular.module('jf')
 	# 	if redirect.length > 0
 			# $route.current = CONFIG.common.loginPath
 	# 		$location.path redirect.pop!
+
+
+	if CONFIG.connectionChecker?.enabled
+		ConnectionChecker.start()
+
+		Events.on "connectionChecker:fail", ->
+			console.log "APP failed to connect to backend"
+			Events.emit "alerts:error", CONFIG.text.cannotConnectToBackend
+
+		Events.on "connectionChecker:ok", ->
+			console.log "APP reconnected to backend"
+			Events.emit "alerts:message", CONFIG.text.connectedToBackendSuccessfully

@@ -22,7 +22,7 @@ angular.module('jf')
 			$scope.alerts.splice(index, 1)
 
 	# adds messsage and returns id of the message
-	function addMessage(msg, type || \success)
+	function addMessage(msg, type || \success, isHtml)
 		message = {
 			type: type
 			msg: msg
@@ -34,26 +34,26 @@ angular.module('jf')
 	function getMessageIndexById(id)
 		_.findIndex $scope.alerts, (msg)-> id is msg.id
 
-	function addMessageAutoClose(msg, type || \success)
-		id = addMessage msg, type
+	function addMessageAutoClose(msg, type || \success, isHtml)
+		id = addMessage msg, type, isHtml
 		$timeout (-> $scope.closeAlert getMessageIndexById(id)), CONFIG.common.alertAutoCloseTimeout
 
-	Events.on "ajax:message_persistent", (msg)->
-		addMessage msg
+	Events.on "ajax:message_persistent", (msg, isHtml)->
+		addMessage msg, isHtml
 
-	Events.on "ajax:message", (msg)->
-		addMessageAutoClose msg, \success
+	Events.on "ajax:message", (msg, isHtml)->
+		addMessageAutoClose msg, \success, isHtml
 
-	Events.on "alerts:message", (msg)->
-		addMessageAutoClose msg, \success
+	Events.on "alerts:message", (msg, isHtml)->
+		addMessageAutoClose msg, \success, isHtml
 
 	Events.on "ajax:message_close", !(index)->
 		$scope.closeAlert(index)
 
-	errorHandler = (msg)->
+	errorHandler = (msg, isHtml)->
 		if msg
-			addMessageAutoClose msg, \danger
+			addMessageAutoClose msg, \danger, isHtml
 
 	Events.on "ajax:error", errorHandler
-	Events.on "error", errorHandler
+	Events.on "alerts:error", errorHandler
 
