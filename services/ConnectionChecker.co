@@ -12,7 +12,7 @@ angular.module('jf')
 		this.reconnectAttempts = reconnectAttempts
 
 	Checker.prototype.check = ->
-		return AjaxAction.get("connectionChecker").withTimeout(timeout)
+		return AjaxAction().get("connectionChecker").withTimeout(timeout)
 
 	Checker.prototype.start = ->
 		if not enabled
