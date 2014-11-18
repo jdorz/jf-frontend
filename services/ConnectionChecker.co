@@ -6,7 +6,7 @@ angular.module('jf')
 	interval = CONFIG.connectionChecker?.interval || 4000
 	reconnectAttempts = CONFIG.connectionChecker?.reconnectAttempts || 3
 
-	function Checker()
+	!function Checker()
 		this.loop = -1
 		this.state = true
 		this.reconnectAttempts = reconnectAttempts

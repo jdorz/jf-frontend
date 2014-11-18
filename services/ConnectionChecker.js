@@ -8,7 +8,7 @@
     function Checker(){
       this.loop = -1;
       this.state = true;
-      return this.reconnectAttempts = reconnectAttempts;
+      this.reconnectAttempts = reconnectAttempts;
     }
     Checker.prototype.check = function(){
       return AjaxAction().get("connectionChecker").withTimeout(timeout);

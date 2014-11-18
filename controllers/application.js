@@ -1,18 +1,22 @@
 (function(){
   angular.module('jf').controller('ApplicationCtrl', function($scope, CONFIG, Authorization, Session, $location, AjaxAction, Messages, DwrLoader, ConnectionChecker, Spinner){
-    var spinner, ref$;
+    var ref$, spinner, ref1$;
     if (CONFIG.debug) {
       window.appScope = $scope;
+      window.CONFIG = CONFIG;
     }
     $scope.CONFIG = CONFIG;
+    if ((ref$ = CONFIG.spinner) != null) {
+      ref$.delay = CONFIG.common.spinnerDelay;
+    }
     spinner = Spinner('spinner', CONFIG.spinner);
     $scope.currentUser = null;
     $scope.setPendingRequest = function(pendingRequest){
       console.log("setPendingRequest ->", pendingRequest);
       if (pendingRequest) {
-        Spinner.start();
+        spinner.start();
       } else {
-        Spinner.stop();
+        spinner.stop();
       }
     };
     Session.applicationScope = $scope;
@@ -30,7 +34,7 @@
         }
       });
     });
-    if ((ref$ = CONFIG.connectionChecker) != null && ref$.enabled) {
+    if ((ref1$ = CONFIG.connectionChecker) != null && ref1$.enabled) {
       ConnectionChecker.start();
       Events.on("connectionChecker:fail", function(){
         console.log("APP failed to connect to backend");

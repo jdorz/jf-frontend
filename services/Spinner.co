@@ -1,38 +1,59 @@
 angular.module('jf')
 .service 'Spinner', (CONFIG)->
 
-	function Spinner(idSelector, spinnerConfig)
+	!function SpinnerWrapper(idSelector, spinnerConfig)
 		this.spinnerTarget = document.getElementById(idSelector)
-		this.spinner = new Spinner(spinnerConfig).spin(idSelector).stop()
+		this.spinner = new Spinner(spinnerConfig).spin(this.spinnerTarget).stop()
 
-		this.spinnerDelay = CONFIG.common.spinnerDelay
+		this.spinnerDelay = spinnerConfig.delay
 		this.spinnerTimeout = false
 		this.spinnerIsVisible = false
+
+		console.log "SPINNER instantiated"
 
 		if CONFIG.debug
 			window.spinStart = this.start
 			window.spinStop = this.stop
 
-	Spinner.prototype.start = ->
+	SpinnerWrapper.prototype.start = !->
 		if not @spinnerDelay
 			console.log "SPINNER start"
-			@spinner.spin(spinnerTarget)
+			@spinner.spin(@spinnerTarget)
 			@spinnerIsVisible = true
 		else
-			console.log "SPINNER start with delay "+spinnerDelay+"ms"
-			@spinnerTimeout = setTimeout (-> $scope.spinner.spin(spinnerTarget)), spinnerDelay
+			console.log "SPINNER start with delay "+@spinnerDelay+"ms"
+			@spinnerTimeout = setTimeout (~> @spinner.spin(@spinnerTarget)), @spinnerDelay
 
-	Spinner.prototype.stop = ->
+	SpinnerWrapper.prototype.stop = !->
 		if @spinnerTimeout is not false
 			console.log "SPINNER stop (timeout only)"
 			clearTimeout @spinnerTimeout
 			@spinnerTimeout = false
 
-		if spinnerIsVisible
+		if @spinnerIsVisible
 			console.log "SPINNER stop"
 			@spinner.stop()
 			@spinnerIsVisible = false
 
 
+	cfg =
+		lines: 17
+		length: 40
+		width: 10
+		radius: 54
+		corners: 1
+		rotate: 0
+		direction: 1
+		color: '#000'
+		speed: 1
+		trail: 60
+		shadow: false
+		hwaccel: false
+		className: 'spinner'
+		zIndex: 2e9
+		top: '50%'
+		left: '50%'
+		position: 'fixed'
 
-	return (selector, spinnerConfig)-> new Spinner(selector, spinnerConfig)
+	# return new SpinnerWrapper('spinner', cfg)
+	return (selector, spinnerConfig)-> new SpinnerWrapper(selector, spinnerConfig)

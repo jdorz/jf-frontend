@@ -4,25 +4,22 @@ angular.module('jf')
 
 	if CONFIG.debug
 		window.appScope = $scope
-
-	# alert(window.screen.availWidth+","+window.screen.availHeight)
+		window.CONFIG = CONFIG
 
 	# wire CONFIG to application scope
 	$scope.CONFIG = CONFIG
 
+	CONFIG.spinner?.delay = CONFIG.common.spinnerDelay
+
 	spinner = Spinner('spinner', CONFIG.spinner)
 
 	$scope.currentUser = null
-	# $scope.pendingRequest = true
 	$scope.setPendingRequest = !(pendingRequest)->
 		console.log("setPendingRequest ->", pendingRequest)
 		if pendingRequest
-			Spinner.start()
+			spinner.start()
 		else
-			Spinner.stop()
-
-	# setTimeout (-> console.log("asd"); $scope.setPendingRequest true), 1000
-
+			spinner.stop()
 
 	# wire $scope to Session
 	Session.applicationScope = $scope

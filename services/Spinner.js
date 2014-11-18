@@ -1,42 +1,64 @@
 (function(){
   angular.module('jf').service('Spinner', function(CONFIG){
-    function Spinner(idSelector, spinnerConfig){
+    var cfg;
+    function SpinnerWrapper(idSelector, spinnerConfig){
       this.spinnerTarget = document.getElementById(idSelector);
-      this.spinner = new Spinner(spinnerConfig).spin(idSelector).stop();
-      this.spinnerDelay = CONFIG.common.spinnerDelay;
+      this.spinner = new Spinner(spinnerConfig).spin(this.spinnerTarget).stop();
+      this.spinnerDelay = spinnerConfig.delay;
       this.spinnerTimeout = false;
       this.spinnerIsVisible = false;
+      console.log("SPINNER instantiated");
       if (CONFIG.debug) {
         window.spinStart = this.start;
-        return window.spinStop = this.stop;
+        window.spinStop = this.stop;
       }
     }
-    Spinner.prototype.start = function(){
+    SpinnerWrapper.prototype.start = function(){
+      var this$ = this;
       if (!this.spinnerDelay) {
         console.log("SPINNER start");
-        this.spinner.spin(spinnerTarget);
-        return this.spinnerIsVisible = true;
+        this.spinner.spin(this.spinnerTarget);
+        this.spinnerIsVisible = true;
       } else {
-        console.log("SPINNER start with delay " + spinnerDelay + "ms");
-        return this.spinnerTimeout = setTimeout(function(){
-          return $scope.spinner.spin(spinnerTarget);
-        }, spinnerDelay);
+        console.log("SPINNER start with delay " + this.spinnerDelay + "ms");
+        this.spinnerTimeout = setTimeout(function(){
+          return this$.spinner.spin(this$.spinnerTarget);
+        }, this.spinnerDelay);
       }
     };
-    Spinner.prototype.stop = function(){
+    SpinnerWrapper.prototype.stop = function(){
       if (this.spinnerTimeout !== false) {
         console.log("SPINNER stop (timeout only)");
         clearTimeout(this.spinnerTimeout);
         this.spinnerTimeout = false;
       }
-      if (spinnerIsVisible) {
+      if (this.spinnerIsVisible) {
         console.log("SPINNER stop");
         this.spinner.stop();
-        return this.spinnerIsVisible = false;
+        this.spinnerIsVisible = false;
       }
     };
+    cfg = {
+      lines: 17,
+      length: 40,
+      width: 10,
+      radius: 54,
+      corners: 1,
+      rotate: 0,
+      direction: 1,
+      color: '#000',
+      speed: 1,
+      trail: 60,
+      shadow: false,
+      hwaccel: false,
+      className: 'spinner',
+      zIndex: 2e9,
+      top: '50%',
+      left: '50%',
+      position: 'fixed'
+    };
     return function(selector, spinnerConfig){
-      return new Spinner(selector, spinnerConfig);
+      return new SpinnerWrapper(selector, spinnerConfig);
     };
   });
 }).call(this);
