@@ -16,6 +16,15 @@
       username = _username;
       this$.applicationScope.currentUser = _username;
     };
+    this.isLoggedIn = function(){
+      return !!this$.getUsername();
+    };
+    this.logout = function(b){
+      this$.setUsername(null);
+    };
+    this.login = function(username){
+      this$.setUsername(username);
+    };
     return this;
   });
 }).call(this);

@@ -19,4 +19,8 @@ angular.module('jf')
 		username := _username
 		@applicationScope.currentUser = _username
 
+	@isLoggedIn = ~> !!@getUsername()
+	@logout = !(b)~> @setUsername(null)
+	@login = !(username)~> @setUsername(username)
+
 	return this

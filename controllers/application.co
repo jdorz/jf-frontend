@@ -1,6 +1,5 @@
 angular.module('jf')
-.controller 'ApplicationCtrl', !($scope, CONFIG, Authorization, Session, $location, AjaxAction, Messages, DwrLoader, ConnectionChecker, Spinner)->
-
+.controller 'ApplicationCtrl', !($scope, CONFIG, Authorization, Authentication, Session, $location, AjaxAction, Messages, DwrLoader, ConnectionChecker, Spinner)->
 
 	if CONFIG.debug
 		window.appScope = $scope
@@ -56,3 +55,7 @@ angular.module('jf')
 		Events.on "connectionChecker:ok", ->
 			console.log "APP reconnected to backend"
 			Events.emit "alerts:message", CONFIG.text.connectedToBackendSuccessfully
+
+
+	# authentication
+	Authentication.discoverLoginState!

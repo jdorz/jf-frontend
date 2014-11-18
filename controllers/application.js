@@ -1,5 +1,5 @@
 (function(){
-  angular.module('jf').controller('ApplicationCtrl', function($scope, CONFIG, Authorization, Session, $location, AjaxAction, Messages, DwrLoader, ConnectionChecker, Spinner){
+  angular.module('jf').controller('ApplicationCtrl', function($scope, CONFIG, Authorization, Authentication, Session, $location, AjaxAction, Messages, DwrLoader, ConnectionChecker, Spinner){
     var ref$, spinner, ref1$;
     if (CONFIG.debug) {
       window.appScope = $scope;
@@ -45,5 +45,6 @@
         return Events.emit("alerts:message", CONFIG.text.connectedToBackendSuccessfully);
       });
     }
+    Authentication.discoverLoginState();
   });
 }).call(this);

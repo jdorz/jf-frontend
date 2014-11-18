@@ -18,11 +18,17 @@ angular.module('jf')
 	SpinnerWrapper.prototype.start = !->
 		if not @spinnerDelay
 			console.log "SPINNER start"
-			@spinner.spin(@spinnerTarget)
-			@spinnerIsVisible = true
+			@spin!
 		else
-			console.log "SPINNER start with delay "+@spinnerDelay+"ms"
-			@spinnerTimeout = setTimeout (~> @spinner.spin(@spinnerTarget)), @spinnerDelay
+			if @spinnerTimeout is not false
+				console.log "SPINNER start with delay "+@spinnerDelay+"ms"
+				@spinnerTimeout = setTimeout (~> @spin!), @spinnerDelay
+			else
+				console.log "SPINNER alreade delay started"
+
+	SpinnerWrapper.prototype.spin = !->
+		@spinner.spin(@spinnerTarget)
+		@spinnerIsVisible = true
 
 	SpinnerWrapper.prototype.stop = !->
 		if @spinnerTimeout is not false
@@ -35,25 +41,4 @@ angular.module('jf')
 			@spinner.stop()
 			@spinnerIsVisible = false
 
-
-	cfg =
-		lines: 17
-		length: 40
-		width: 10
-		radius: 54
-		corners: 1
-		rotate: 0
-		direction: 1
-		color: '#000'
-		speed: 1
-		trail: 60
-		shadow: false
-		hwaccel: false
-		className: 'spinner'
-		zIndex: 2e9
-		top: '50%'
-		left: '50%'
-		position: 'fixed'
-
-	# return new SpinnerWrapper('spinner', cfg)
 	return (selector, spinnerConfig)-> new SpinnerWrapper(selector, spinnerConfig)
