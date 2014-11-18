@@ -1,31 +1,18 @@
 (function(){
-  angular.module('jf').controller('ApplicationCtrl', function($scope, CONFIG, Authorization, Session, $location, AjaxAction, Messages, DwrLoader, ConnectionChecker){
-    var spinnerTarget, ref$;
+  angular.module('jf').controller('ApplicationCtrl', function($scope, CONFIG, Authorization, Session, $location, AjaxAction, Messages, DwrLoader, ConnectionChecker, Spinner){
+    var spinner, ref$;
     if (CONFIG.debug) {
       window.appScope = $scope;
     }
     $scope.CONFIG = CONFIG;
-    spinnerTarget = document.getElementById('spinner');
-    $scope.spinner = new Spinner(CONFIG.spinner).spin(spinnerTarget).stop();
-    function spinStart(){
-      console.log("spinStart");
-      return $scope.spinner.spin(spinnerTarget);
-    }
-    function spinStop(){
-      console.log("spinStop");
-      return $scope.spinner.stop();
-    }
-    if (CONFIG.debug) {
-      window.spinStart = spinStart;
-      window.spinStop = spinStop;
-    }
+    spinner = Spinner('spinner', CONFIG.spinner);
     $scope.currentUser = null;
     $scope.setPendingRequest = function(pendingRequest){
       console.log("setPendingRequest ->", pendingRequest);
       if (pendingRequest) {
-        spinStart();
+        Spinner.start();
       } else {
-        spinStop();
+        Spinner.stop();
       }
     };
     Session.applicationScope = $scope;

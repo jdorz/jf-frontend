@@ -333,7 +333,6 @@ angular.module('jf')
 			ApplicationState.setPendingRequest(false);
 
 		}).fail(function(errorMessage){
-			console.log("ERROR AJAX", arguments);
 			error(errorMessage);
 			if(errorMessage) {
 				self.addActionError(errorMessage);
@@ -414,7 +413,10 @@ angular.module('jf')
 			// if(options.params) angularOptions.params = options.params;
 		}
 
-		console.log("angularOptions", angularOptions);
+		if(this.DEBUG) {
+			console.log("AJAXACTION angularOptions", angularOptions);
+		}
+		
 		var http = $http(angularOptions);
 
 		http.success(function(data, status, headers, config){

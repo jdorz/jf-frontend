@@ -1,0 +1,38 @@
+angular.module('jf')
+.service 'Spinner', (CONFIG)->
+
+	function Spinner(idSelector, spinnerConfig)
+		this.spinnerTarget = document.getElementById(idSelector)
+		this.spinner = new Spinner(spinnerConfig).spin(idSelector).stop()
+
+		this.spinnerDelay = CONFIG.common.spinnerDelay
+		this.spinnerTimeout = false
+		this.spinnerIsVisible = false
+
+		if CONFIG.debug
+			window.spinStart = this.start
+			window.spinStop = this.stop
+
+	Spinner.prototype.start = ->
+		if not @spinnerDelay
+			console.log "SPINNER start"
+			@spinner.spin(spinnerTarget)
+			@spinnerIsVisible = true
+		else
+			console.log "SPINNER start with delay "+spinnerDelay+"ms"
+			@spinnerTimeout = setTimeout (-> $scope.spinner.spin(spinnerTarget)), spinnerDelay
+
+	Spinner.prototype.stop = ->
+		if @spinnerTimeout is not false
+			console.log "SPINNER stop (timeout only)"
+			clearTimeout @spinnerTimeout
+			@spinnerTimeout = false
+
+		if spinnerIsVisible
+			console.log "SPINNER stop"
+			@spinner.stop()
+			@spinnerIsVisible = false
+
+
+
+	return (selector, spinnerConfig)-> new Spinner(selector, spinnerConfig)

@@ -1,6 +1,5 @@
 angular.module('jf')
-# inject Messages so that they get initialized
-.controller 'ApplicationCtrl', !($scope, CONFIG, Authorization, Session, $location, AjaxAction, Messages, DwrLoader, ConnectionChecker)->
+.controller 'ApplicationCtrl', !($scope, CONFIG, Authorization, Session, $location, AjaxAction, Messages, DwrLoader, ConnectionChecker, Spinner)->
 
 
 	if CONFIG.debug
@@ -11,35 +10,16 @@ angular.module('jf')
 	# wire CONFIG to application scope
 	$scope.CONFIG = CONFIG
 
-	# add spinner
-	spinnerTarget = document.getElementById('spinner')
-	$scope.spinner = new Spinner(CONFIG.spinner).spin(spinnerTarget).stop()
-
-	function spinStart
-		console.log "spinStart"
-		$scope.spinner.spin(spinnerTarget)
-		# $scope.spinner = new Spinner(CONFIG.spinner).spin(spinnerTarget)
-
-	function spinStop
-		console.log "spinStop"
-		$scope.spinner.stop()
-
-	if CONFIG.debug
-		window.spinStart = spinStart
-		window.spinStop = spinStop
-
-	# setTimeout (-> $scope.spinner.spin(spinnerTarget)), 1000
-
-	# $scope.showMainSite = true
+	spinner = Spinner('spinner', CONFIG.spinner)
 
 	$scope.currentUser = null
 	# $scope.pendingRequest = true
 	$scope.setPendingRequest = !(pendingRequest)->
 		console.log("setPendingRequest ->", pendingRequest)
 		if pendingRequest
-			spinStart()
+			Spinner.start()
 		else
-			spinStop()
+			Spinner.stop()
 
 	# setTimeout (-> console.log("asd"); $scope.setPendingRequest true), 1000
 
