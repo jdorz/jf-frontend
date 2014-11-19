@@ -21,38 +21,49 @@ angular.module('jf')
 		if index >= 0
 			$scope.alerts.splice(index, 1)
 
+	# TODO: lodash
+	isString = (value)-> return typeof value == 'string' || value && typeof value == 'object' && toString.call(value) == '[object String]' || false;
+
 	# adds messsage and returns id of the message
-	function addMessage(msg, type || \success, isHtml)
+	function addMessage(msg, type || \success, contentType)
+		if not isString(msg)
+			msg := msg.toString()
+
+		if contentType is "application/json" and msg.match(/^"/)
+			msg := msg.substring 1, msg.length-1
+
 		message = {
 			type: type
 			msg: msg
 			id: generateId()
+			contentType: contentType
 		}
+
 		$scope.alerts.push(message)
 		return message.id
 
 	function getMessageIndexById(id)
 		_.findIndex $scope.alerts, (msg)-> id is msg.id
 
-	function addMessageAutoClose(msg, type || \success, isHtml)
-		id = addMessage msg, type, isHtml
+	function addMessageAutoClose(msg, type || \success, contentType)
+		id = addMessage msg, type, contentType
 		$timeout (-> $scope.closeAlert getMessageIndexById(id)), CONFIG.common.alertAutoCloseTimeout
 
-	Events.on "ajax:message_persistent", (msg, isHtml)->
-		addMessage msg, isHtml
+	Events.on "ajax:message_persistent", (msg, contentType)->
+		addMessage msg, contentType
 
-	Events.on "ajax:message", (msg, isHtml)->
-		addMessageAutoClose msg, \success, isHtml
+	Events.on "ajax:message", (msg, contentType)->
+		addMessageAutoClose msg, \success, contentType
 
-	Events.on "alerts:message", (msg, isHtml)->
-		addMessageAutoClose msg, \success, isHtml
+	Events.on "alerts:message", (msg, contentType)->
+		addMessageAutoClose msg, \success, contentType
 
 	Events.on "ajax:message_close", !(index)->
 		$scope.closeAlert(index)
 
-	errorHandler = (msg, isHtml)->
+	errorHandler = (msg, contentType)->
 		if msg
-			addMessageAutoClose msg, \danger, isHtml
+			addMessageAutoClose msg, \danger, contentType
 
 	Events.on "ajax:error", errorHandler
 	Events.on "alerts:error", errorHandler

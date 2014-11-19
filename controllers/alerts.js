@@ -1,6 +1,6 @@
 (function(){
   angular.module('jf').controller('AlertsCtrl', function($scope, CONFIG, Events, $timeout){
-    var lastMessageId, errorHandler;
+    var lastMessageId, isString, errorHandler;
     if (CONFIG.debug) {
       window.alertScope = $scope;
     }
@@ -20,13 +20,23 @@
         return $scope.alerts.splice(index, 1);
       }
     };
-    function addMessage(msg, type, isHtml){
+    isString = function(value){
+      return typeof value == 'string' || value && typeof value == 'object' && toString.call(value) == '[object String]' || false;
+    };
+    function addMessage(msg, type, contentType){
       var message;
       type || (type = 'success');
+      if (!isString(msg)) {
+        msg = msg.toString();
+      }
+      if (contentType === "application/json" && msg.match(/^"/)) {
+        msg = msg.substring(1, msg.length - 1);
+      }
       message = {
         type: type,
         msg: msg,
-        id: generateId()
+        id: generateId(),
+        contentType: contentType
       };
       $scope.alerts.push(message);
       return message.id;
@@ -36,29 +46,29 @@
         return id === msg.id;
       });
     }
-    function addMessageAutoClose(msg, type, isHtml){
+    function addMessageAutoClose(msg, type, contentType){
       var id;
       type || (type = 'success');
-      id = addMessage(msg, type, isHtml);
+      id = addMessage(msg, type, contentType);
       return $timeout(function(){
         return $scope.closeAlert(getMessageIndexById(id));
       }, CONFIG.common.alertAutoCloseTimeout);
     }
-    Events.on("ajax:message_persistent", function(msg, isHtml){
-      return addMessage(msg, isHtml);
+    Events.on("ajax:message_persistent", function(msg, contentType){
+      return addMessage(msg, contentType);
     });
-    Events.on("ajax:message", function(msg, isHtml){
-      return addMessageAutoClose(msg, 'success', isHtml);
+    Events.on("ajax:message", function(msg, contentType){
+      return addMessageAutoClose(msg, 'success', contentType);
     });
-    Events.on("alerts:message", function(msg, isHtml){
-      return addMessageAutoClose(msg, 'success', isHtml);
+    Events.on("alerts:message", function(msg, contentType){
+      return addMessageAutoClose(msg, 'success', contentType);
     });
     Events.on("ajax:message_close", function(index){
       $scope.closeAlert(index);
     });
-    errorHandler = function(msg, isHtml){
+    errorHandler = function(msg, contentType){
       if (msg) {
-        return addMessageAutoClose(msg, 'danger', isHtml);
+        return addMessageAutoClose(msg, 'danger', contentType);
       }
     };
     Events.on("ajax:error", errorHandler);

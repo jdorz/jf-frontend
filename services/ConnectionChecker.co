@@ -16,30 +16,33 @@ angular.module('jf')
 
 	Checker.prototype.start = ->
 		if not enabled
-			return console.log("CONNECTIONCHECKER not enabled, cannot start")
-		this.intervalCallback!
+			console.log("CONNECTIONCHECKER not enabled, cannot start")
+		else
+			this.intervalCallback!
+
+	Checker.prototype.isEnabled = -> enabled
 
 	Checker.prototype.intervalCallback = ->
 		if not enabled
 			console.log("CONNECTIONCHECKER not enabled, stopping iteration")
-			return clearTimeout(this.loop)
+			clearTimeout(this.loop)
+		else
+			this.check()
+				.done ~>
+					console.log("CONNECTIONCHECKER ok")
 
-		this.check()
-			.done ~>
-				console.log("CONNECTIONCHECKER ok")
+					if this.state is false
+						Events.emit "connectionChecker:ok"
 
-				if this.state is false
-					Events.emit "connectionChecker:ok"
+					this.state = true
+					this.loop = setTimeout (~> this.intervalCallback!), interval
+				.fail ~>
+					console.log("CONNECTIONCHECKER error, cannot connect")
+					this.state = false
+					this.loop = setTimeout (~> this.intervalCallback!), interval
+					Events.emit "connectionChecker:fail"
 
-				this.state = true
-				this.loop = setTimeout (~> this.intervalCallback!), interval
-			.fail ~>
-				console.log("CONNECTIONCHECKER error, cannot connect")
-				this.state = false
-				this.loop = setTimeout (~> this.intervalCallback!), interval
-				Events.emit "connectionChecker:fail"
-
-				return false
+					return false
 
 	Checker.prototype.stop = ->
 		clearTimeout this.loop

@@ -16,33 +16,38 @@
     Checker.prototype.start = function(){
       if (!enabled) {
         return console.log("CONNECTIONCHECKER not enabled, cannot start");
+      } else {
+        return this.intervalCallback();
       }
-      return this.intervalCallback();
+    };
+    Checker.prototype.isEnabled = function(){
+      return enabled;
     };
     Checker.prototype.intervalCallback = function(){
       var this$ = this;
       if (!enabled) {
         console.log("CONNECTIONCHECKER not enabled, stopping iteration");
         return clearTimeout(this.loop);
+      } else {
+        return this.check().done(function(){
+          console.log("CONNECTIONCHECKER ok");
+          if (this$.state === false) {
+            Events.emit("connectionChecker:ok");
+          }
+          this$.state = true;
+          return this$.loop = setTimeout(function(){
+            return this$.intervalCallback();
+          }, interval);
+        }).fail(function(){
+          console.log("CONNECTIONCHECKER error, cannot connect");
+          this$.state = false;
+          this$.loop = setTimeout(function(){
+            return this$.intervalCallback();
+          }, interval);
+          Events.emit("connectionChecker:fail");
+          return false;
+        });
       }
-      return this.check().done(function(){
-        console.log("CONNECTIONCHECKER ok");
-        if (this$.state === false) {
-          Events.emit("connectionChecker:ok");
-        }
-        this$.state = true;
-        return this$.loop = setTimeout(function(){
-          return this$.intervalCallback();
-        }, interval);
-      }).fail(function(){
-        console.log("CONNECTIONCHECKER error, cannot connect");
-        this$.state = false;
-        this$.loop = setTimeout(function(){
-          return this$.intervalCallback();
-        }, interval);
-        Events.emit("connectionChecker:fail");
-        return false;
-      });
     };
     Checker.prototype.stop = function(){
       return clearTimeout(this.loop);

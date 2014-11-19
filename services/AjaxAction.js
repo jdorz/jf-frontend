@@ -187,17 +187,17 @@ angular.module('jf')
 		return ajax.fail.apply(this, Array.prototype.slice.apply(arguments));
 	}
 
-	AjaxAction.prototype.addActionMessage = function(message, isError) {
-		var isHtml = !!message.match(/^<html>/);
+	AjaxAction.prototype.addActionMessage = function(message, isError, contentType) {
+		// var isHtml = !!message.match(/^<html>/);
 
-		Events.emit(isError === true ? "ajax:error" : "ajax:message", message, isHtml);
+		Events.emit(isError === true ? "ajax:error" : "ajax:message", message, contentType);
 
 		isError ? error(message) : log(message);
 	}
 
-	AjaxAction.prototype.addActionError = function(message) {
+	AjaxAction.prototype.addActionError = function(message, contentType) {
 		// if(this.DEBUG) message += " [js]";
-		return this.addActionMessage(message, true);
+		return this.addActionMessage(message, true, contentType);
 	}
 
 	AjaxAction.prototype.handleMessages = function(messages, isError) {
@@ -332,10 +332,12 @@ angular.module('jf')
 
 			ApplicationState.setPendingRequest(false);
 
-		}).fail(function(errorMessage){
+		}).fail(function(errorMessage, status, headerGetter){
+			var contentType = headerGetter("Content-Type");
+
 			error(errorMessage);
 			if(errorMessage) {
-				self.addActionError(errorMessage);
+				self.addActionError(errorMessage, contentType);
 			}
 			ApplicationState.setPendingRequest(false);
 
@@ -366,7 +368,7 @@ angular.module('jf')
 		});
 
 		ajax.fail(function(jqXHR, statusText, error){
-			dfd.reject(error);
+			dfd.reject(error, statusText, function(headerName) { return jqXHR.getResponseHeader(headerName); });
 		});
 
 		return dfd;
@@ -420,11 +422,11 @@ angular.module('jf')
 		var http = $http(angularOptions);
 
 		http.success(function(data, status, headers, config){
-			dfd.resolve(data, status, headers);
+			dfd.resolve(data, status, function(headerName) { return headers(headerName); });
 		});
 
 		http.error(function(data, status, headers, config){
-			dfd.reject(data, status, headers);
+			dfd.reject(data, status, function(headerName) { return headers(headerName); });
 		});
 
 		return dfd;
