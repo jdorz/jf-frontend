@@ -24,7 +24,7 @@
             return this$.spin();
           }, this.spinnerDelay);
         } else {
-          console.log("SPINNER alreade delay started");
+          console.log("SPINNER already delay started, not starting");
         }
       }
     };
