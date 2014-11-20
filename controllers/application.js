@@ -27,10 +27,14 @@
       Authorization.isAuthorized(nextPath, function(isAuthorized){
         console.log("isAuthorized", isAuthorized, nextPath);
         if (!isAuthorized) {
-          console.log("redirect --> " + CONFIG.common.loginPath + "?redirectPath=" + nextPath);
-          return $location.path(CONFIG.common.loginPath).search({
-            redirectPath: encodeURIComponent(nextPath)
-          });
+          if (CONFIG.common.ssoLoginUrl) {
+            return window.location.href = CONFIG.common.ssoLoginUrl;
+          } else {
+            console.log("redirect --> " + CONFIG.common.loginPath + "?redirectPath=" + nextPath);
+            return $location.path(CONFIG.common.loginPath).search({
+              redirectPath: encodeURIComponent(nextPath)
+            });
+          }
         }
       });
     });

@@ -2,7 +2,8 @@
   angular.module('jf').service('Authorization', function(CONFIG, Authentication, AjaxAction, Session){
     var isAuthorized, this$ = this;
     isAuthorized = function(path){
-      if (URI(path).path() === CONFIG.common.loginPath) {
+      var ref$;
+      if (typeof (ref$ = CONFIG.auth).isPublicPath == 'function' && ref$.isPublicPath(URI(path).path())) {
         console.log("AUTHORIZATION OK " + path);
         return true;
       } else {

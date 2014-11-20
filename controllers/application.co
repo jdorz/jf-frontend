@@ -35,9 +35,11 @@ angular.module('jf')
 		Authorization.isAuthorized nextPath, (isAuthorized)->
 			console.log "isAuthorized", isAuthorized, nextPath
 			if not isAuthorized
-				# event.preventDefault!
-				console.log "redirect --> "+CONFIG.common.loginPath+"?redirectPath="+nextPath
-				$location.path(CONFIG.common.loginPath).search {redirectPath: encodeURIComponent(nextPath)}
+				if CONFIG.common.ssoLoginUrl
+					window.location.href = CONFIG.common.ssoLoginUrl
+				else
+					console.log "redirect --> "+CONFIG.common.loginPath+"?redirectPath="+nextPath
+					$location.path(CONFIG.common.loginPath).search {redirectPath: encodeURIComponent(nextPath)}
 
 	# $scope.$on "$locationChangeSuccess", !(event, next)->
 	# 	if redirect.length > 0
