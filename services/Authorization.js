@@ -13,17 +13,13 @@
     };
     this.isAuthorized = function(path, callback){
       console.log("Session (Authorization)", Session.getUsername());
-      if (Session.getUsername() !== null) {
+      if (isAuthorized(path)) {
         return callback(true);
       } else {
-        return Authentication.isLoggedInDfd.done(function(){
-          callback(true);
+        return Authentication.discoverLoginState().done(function(){
+          return callback(true);
         }).fail(function(){
-          if (isAuthorized(path)) {
-            callback(true);
-          } else {
-            callback(false);
-          }
+          return callback(false);
         });
       }
     };

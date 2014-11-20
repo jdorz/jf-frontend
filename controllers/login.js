@@ -34,7 +34,7 @@
     $scope.logout = function(){
       return Authentication.logout().done(function(){
         $scope.success = "Wylogowano";
-        return redirect("/login");
+        return redirect("/");
       }).fail(function(error){
         return $scope.error = error;
       });

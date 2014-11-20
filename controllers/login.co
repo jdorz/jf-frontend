@@ -40,7 +40,7 @@ angular.module('jf').controller 'LoginCtrl', !($scope, AjaxAction, Authenticatio
 		Authentication.logout!
 		.done ->
 			$scope.success = "Wylogowano"
-			redirect "/login"
+			redirect "/"
 		.fail (error)->
 			$scope.error = error
 

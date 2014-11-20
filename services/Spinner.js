@@ -18,7 +18,7 @@
         console.log("SPINNER start");
         this.spin();
       } else {
-        if (this.spinnerTimeout !== false) {
+        if (this.spinnerTimeout === false) {
           console.log("SPINNER start with delay " + this.spinnerDelay + "ms");
           this.spinnerTimeout = setTimeout(function(){
             return this$.spin();

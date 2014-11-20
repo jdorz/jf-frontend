@@ -1,16 +1,18 @@
 (function(){
   angular.module('jf').service('Authentication', function(AjaxAction, Session){
     var this$ = this;
-    this.isLoggedInDfd = $.Deferred();
     this.discoverLoginState = function(){
+      var dfd;
+      dfd = $.Deferred();
       AjaxAction("is_logged_in").withRawResponse().done(function(response){
         if (response.is_logged_in) {
           Session.login(response.username);
-          return this$.isLoggedInDfd.resolve(response.username);
+          return dfd.resolve(response.username);
         } else {
-          return this$.isLoggedInDfd.reject();
+          return dfd.reject();
         }
       });
+      return dfd;
     };
     this.authenticate = function(credentials){
       var dfd;

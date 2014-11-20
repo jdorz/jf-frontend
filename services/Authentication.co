@@ -1,17 +1,21 @@
 angular.module('jf')
 .service 'Authentication', (AjaxAction, Session)->
 
-	@isLoggedInDfd = $.Deferred()
+	# @isLoggedInDfd = $.Deferred()
 
-	@discoverLoginState = !~>
+	@discoverLoginState = ~>
+		dfd = $.Deferred()
 		AjaxAction("is_logged_in")
 		.withRawResponse()
 		.done (response)~>
 			if response.is_logged_in
 				Session.login(response.username)
-				@isLoggedInDfd.resolve(response.username)
+				dfd.resolve(response.username)
+				# @isLoggedInDfd.resolve(response.username)
 			else
-				@isLoggedInDfd.reject()
+				# @isLoggedInDfd.reject()
+				dfd.reject()
+		dfd
 
 	@authenticate = (credentials)->
 		dfd = $.Deferred()
@@ -32,6 +36,7 @@ angular.module('jf')
 		AjaxAction().post("logout")
 		.done ->
 			Session.logout!
+			# @isLoggedInDfd := $.Deferred()
 			dfd.resolve "OK"
 		.fail (error)->
 			alert arguments

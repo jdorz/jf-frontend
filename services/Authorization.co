@@ -12,15 +12,22 @@ angular.module('jf')
 	@isAuthorized = (path, callback)->
 		console.log "Session (Authorization)", Session.getUsername()
 
-		if Session.getUsername() is not null
+		if isAuthorized(path)
 			callback(true)
 		else
-			Authentication.isLoggedInDfd
-			.done !-> callback(true)
-			.fail !->
-				if isAuthorized(path)
-					callback(true)
-				else
-					callback(false)
+			Authentication.discoverLoginState()
+			.done -> callback(true)
+			.fail -> callback(false)
+
+		# if Session.getUsername() is not null
+		# 	callback(true)
+		# else
+		# 	Authentication.isLoggedInDfd
+		# 	.done !-> callback(true)
+		# 	.fail !->
+		# 		if isAuthorized(path)
+		# 			callback(true)
+		# 		else
+		# 			callback(false)
 
 	return this

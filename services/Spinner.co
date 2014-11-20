@@ -20,7 +20,7 @@ angular.module('jf')
 			console.log "SPINNER start"
 			@spin!
 		else
-			if @spinnerTimeout is not false
+			if @spinnerTimeout is false
 				console.log "SPINNER start with delay "+@spinnerDelay+"ms"
 				@spinnerTimeout = setTimeout (~> @spin!), @spinnerDelay
 			else
