@@ -1,6 +1,6 @@
 {
   "name": "jf",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "authors": [
     "Jan Swiecki <jan.swiecki@gmail.com>"
   ],
@@ -21,7 +21,8 @@
     "services/JQuery.js",
     "services/Session.js",
     "services/ConnectionChecker.js",
-    "services/Spinner.js"
+    "services/Spinner.js",
+    "services/Cookie.js"
   ],
   "keywords": [
     "angular"
