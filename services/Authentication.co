@@ -1,5 +1,5 @@
 angular.module('jf')
-.service 'Authentication', (AjaxAction, Session)->
+.service 'Authentication', (AjaxAction, Session, Cookie)->
 
 	# @isLoggedInDfd = $.Deferred()
 
@@ -36,6 +36,7 @@ angular.module('jf')
 		AjaxAction().post("logout")
 		.done ->
 			Session.logout!
+			Cookie.erase("JSESSIONID");
 			# @isLoggedInDfd := $.Deferred()
 			dfd.resolve "OK"
 		.fail (error)->

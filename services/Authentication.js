@@ -1,5 +1,5 @@
 (function(){
-  angular.module('jf').service('Authentication', function(AjaxAction, Session){
+  angular.module('jf').service('Authentication', function(AjaxAction, Session, Cookie){
     var this$ = this;
     this.discoverLoginState = function(){
       var dfd;
@@ -31,6 +31,7 @@
       dfd = $.Deferred();
       AjaxAction().post("logout").done(function(){
         Session.logout();
+        Cookie.erase("JSESSIONID");
         return dfd.resolve("OK");
       }).fail(function(error){
         alert(arguments);

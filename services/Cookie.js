@@ -25,6 +25,6 @@ angular.module('jf')
 		},
 		erase: function(name) {
 		    Cookie.create(name, "", -1);
-		};
+		}
 	}
 });
