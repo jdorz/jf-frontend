@@ -37,11 +37,14 @@ angular.module('jf').controller 'LoginCtrl', !($scope, AjaxAction, Authenticatio
 			$scope.error = error
 
 	$scope.logout = ->
-		Authentication.logout!
-		.done ->
-			$scope.success = "Wylogowano"
-			redirect "/"
-		.fail (error)->
-			$scope.error = error
+		if not CONFIG.common.ssoLogoutUrl
+			Authentication.logout!
+			.done ->
+				$scope.success = "Wylogowano"
+				redirect "/"
+			.fail (error)->
+				$scope.error = error
+		else
+			window.location.href = CONFIG.common.ssoLogoutUrl
 
 

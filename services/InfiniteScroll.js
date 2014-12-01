@@ -9,10 +9,20 @@
       this.resultField = resultField;
       this.columnField = columnField;
       this.searchRequest = {};
+      this._viaJson = false;
+      this._onBeforeRequest = function(){};
       return this.reset();
+    };
+    InfiniteScroll.prototype.withOnBeforeRequest = function(callback){
+      this._onBeforeRequest = callback;
+      return this;
     };
     InfiniteScroll.prototype.viaQueryParams = function(){
       this._viaQueryParams = true;
+      return this;
+    };
+    InfiniteScroll.prototype.viaJson = function(){
+      this._viaJson = true;
       return this;
     };
     InfiniteScroll.prototype.withIdColumnName = function(idColumnName){
@@ -69,9 +79,12 @@
       }
       this.busy = true;
       this.searchRequest.offset += this.searchRequest.limit;
+      this._onBeforeRequest(this.searchRequest);
       ajax = this._viaQueryParams
         ? AjaxAction().get(this.targetName, this.searchRequest)
-        : AjaxAction().post(this.targetName).withQueryParams(this.searchRequest);
+        : !this._viaJson
+          ? AjaxAction().post(this.targetName).withQueryParams(this.searchRequest)
+          : AjaxAction().post(this.targetName, this.searchRequest);
       return ajax.done(function(data){
         var items, key$;
         this$.columns = data[this$.columnField];
@@ -80,7 +93,7 @@
         });
         if (this$.searchRequest.offset === 0 && items.length === 0) {
           if (typeof this$.noResultsCallback == 'function') {
-            this$.noResultsCallback();
+            this$.noResultsCallback(data);
           }
         }
         _.each(items, function(item){

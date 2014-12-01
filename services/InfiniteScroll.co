@@ -10,10 +10,21 @@ angular.module('jf')
 		# this.idColumnName = \id
 		this.searchRequest = {}
 
+		this._viaJson = false
+		this._onBeforeRequest = ->
+
 		this.reset()
+
+	InfiniteScroll.prototype.withOnBeforeRequest = (callback)->
+		this._onBeforeRequest = callback
+		this
 
 	InfiniteScroll.prototype.viaQueryParams = ->
 		this._viaQueryParams = true
+		this
+
+	InfiniteScroll.prototype.viaJson = ->
+		this._viaJson = true
 		this
 
 	InfiniteScroll.prototype.withIdColumnName = (idColumnName)->
@@ -72,10 +83,14 @@ angular.module('jf')
 
 		@searchRequest.offset += @searchRequest.limit
 
+		@_onBeforeRequest @searchRequest
+
 		ajax = if @_viaQueryParams
 			AjaxAction().get(this.targetName, @searchRequest)
-		else
+		else if not @_viaJson
 			AjaxAction().post(this.targetName).withQueryParams(@searchRequest)
+		else
+			AjaxAction().post(this.targetName, @searchRequest)
 
 		ajax
 			.done (data)~>
@@ -84,9 +99,7 @@ angular.module('jf')
 				items = data@@[@resultField].map ~> @sortByColumns(it)
 
 				if @searchRequest.offset is 0 and items.length is 0
-					this.noResultsCallback?!
-
-				# console.log items
+					this.noResultsCallback?(data)
 
 				_.each items, (item)~>
 					this.items.push item

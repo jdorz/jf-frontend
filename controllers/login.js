@@ -32,12 +32,16 @@
       });
     };
     $scope.logout = function(){
-      return Authentication.logout().done(function(){
-        $scope.success = "Wylogowano";
-        return redirect("/");
-      }).fail(function(error){
-        return $scope.error = error;
-      });
+      if (!CONFIG.common.ssoLogoutUrl) {
+        return Authentication.logout().done(function(){
+          $scope.success = "Wylogowano";
+          return redirect("/");
+        }).fail(function(error){
+          return $scope.error = error;
+        });
+      } else {
+        return window.location.href = CONFIG.common.ssoLogoutUrl;
+      }
     };
   });
 }).call(this);
