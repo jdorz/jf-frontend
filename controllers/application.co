@@ -1,5 +1,5 @@
 angular.module('jf')
-.controller 'ApplicationCtrl', !($scope, CONFIG, Authorization, Authentication, Session, $location, AjaxAction, Messages, DwrLoader, ConnectionChecker, Spinner)->
+.controller 'ApplicationCtrl', !($scope, CONFIG, Authorization, Authentication, Session, $location, AjaxAction, Spinner)->
 
 	if CONFIG.debug
 		window.appScope = $scope
@@ -23,7 +23,7 @@ angular.module('jf')
 	# wire $scope to Session
 	Session.applicationScope = $scope
 
-	$scope.$on "$locationChangeStart", !(event, next)->
+	function handleLocationChange(event, next)
 
 		console.log "next ------>", next
 		nextPath = new URI(next).resource()
@@ -46,6 +46,8 @@ angular.module('jf')
 			# $route.current = CONFIG.common.loginPath
 	# 		$location.path redirect.pop!
 
+	$scope.$on "$locationChangeStart", handleLocationChange
+	$scope.$on "$stateChangeStart", handleLocationChange
 
 	if CONFIG.connectionChecker?.enabled
 		ConnectionChecker.start()

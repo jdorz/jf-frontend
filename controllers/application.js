@@ -1,5 +1,5 @@
 (function(){
-  angular.module('jf').controller('ApplicationCtrl', function($scope, CONFIG, Authorization, Authentication, Session, $location, AjaxAction, Messages, DwrLoader, ConnectionChecker, Spinner){
+  angular.module('jf').controller('ApplicationCtrl', function($scope, CONFIG, Authorization, Authentication, Session, $location, AjaxAction, Spinner){
     var ref$, spinner, ref1$;
     if (CONFIG.debug) {
       window.appScope = $scope;
@@ -20,11 +20,11 @@
       }
     };
     Session.applicationScope = $scope;
-    $scope.$on("$locationChangeStart", function(event, next){
+    function handleLocationChange(event, next){
       var nextPath;
       console.log("next ------>", next);
       nextPath = new URI(next).resource();
-      Authorization.isAuthorized(nextPath, function(isAuthorized){
+      return Authorization.isAuthorized(nextPath, function(isAuthorized){
         console.log("isAuthorized", isAuthorized, nextPath);
         if (!isAuthorized) {
           if (CONFIG.common.ssoLoginUrl) {
@@ -37,7 +37,9 @@
           }
         }
       });
-    });
+    }
+    $scope.$on("$locationChangeStart", handleLocationChange);
+    $scope.$on("$stateChangeStart", handleLocationChange);
     if ((ref1$ = CONFIG.connectionChecker) != null && ref1$.enabled) {
       ConnectionChecker.start();
       Events.on("connectionChecker:fail", function(){
