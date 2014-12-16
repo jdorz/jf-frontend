@@ -1,5 +1,5 @@
 angular.module('jf')
-.controller 'ApplicationCtrl', !($scope, CONFIG, Authorization, Authentication, Session, $location, AjaxAction, Spinner)->
+.controller 'ApplicationCtrl', !($scope, CONFIG, Authorization, Authentication, Session, $location, AjaxAction, Spinner,ConnectionChecker)->
 
 	if CONFIG.debug
 		window.appScope = $scope
@@ -23,23 +23,34 @@ angular.module('jf')
 	# wire $scope to Session
 	Session.applicationScope = $scope
 
-	function handleLocationChange(event, next)
+	function handleLocationChange(event, next, previous)
+
 
 		console.log "next ------>", next
-		nextPath = new URI(next).resource()
+		if typeof next === 'string'
+			nextPath = new URI(next).resource()
+		else if next.url
+			nextPath = new URI(next.url).resource()
+		else
+			throw "Cannot parse next path to url"
 
+		if not nextPath.match(CONFIG.common.loginPath )
 		# if not Authorization.isAuthorized $scope.currentUser, nextPath
 		# 	# event.preventDefault!
 		# 	$location.path CONFIG.common.loginPath
 
-		Authorization.isAuthorized nextPath, (isAuthorized)->
-			console.log "isAuthorized", isAuthorized, nextPath
-			if not isAuthorized
-				if CONFIG.common.ssoLoginUrl
-					window.location.href = CONFIG.common.ssoLoginUrl
-				else
-					console.log "redirect --> "+CONFIG.common.loginPath+"?redirectPath="+nextPath
-					$location.path(CONFIG.common.loginPath).search {redirectPath: encodeURIComponent(nextPath)}
+			if CONFIG.common.keepPreviousPath
+				console.log "previous <-----", previous
+				Session.previousUrl = previous
+
+			Authorization.isAuthorized nextPath, (isAuthorized)->
+				console.log "isAuthorized", isAuthorized, nextPath
+				if not isAuthorized
+					if CONFIG.common.ssoLoginUrl
+						window.location.href = CONFIG.common.ssoLoginUrl
+					else
+						console.log "redirect --> "+CONFIG.common.loginPath+"?redirectPath="+nextPath
+						$location.path(CONFIG.common.loginPath).search {redirectPath: encodeURIComponent(nextPath)}
 
 	# $scope.$on "$locationChangeSuccess", !(event, next)->
 	# 	if redirect.length > 0
