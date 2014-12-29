@@ -28,9 +28,9 @@ angular.module('jf')
 
 		console.log "next ------>", next
 		if typeof next === 'string'
-			nextPath = new URI(next).resource()
+			nextPath = new URI(next.replace('/#/',"/")).resource()
 		else if next.url
-			nextPath = new URI(next.url).resource()
+			nextPath = new URI(next.url.replace('/#/',"/")).resource()
 		else
 			throw "Cannot parse next path to url"
 
