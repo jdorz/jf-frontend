@@ -24,7 +24,7 @@ angular.module('jf')
 		    return null;
 		},
 		erase: function(name) {
-		    Cookie.create(name, "", -1);
+		    this.create(name, "", -1);
 		}
 	}
 });
