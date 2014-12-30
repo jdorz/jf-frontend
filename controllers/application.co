@@ -51,10 +51,10 @@ angular.module('jf')
 
 	function resolveNextPath(event,next)
 		if typeof next === 'string'
-			return new URI(next.replace('/#/',"/")).resource()
+			return new URI(next).resource()
 
 		if next.url
-			nextPath = new URI(next.url.replace('/#/',"/")).resource()
+			nextPath = new URI(next.url).resource()
 
 		throw "Cannot parse next path to url"
 
