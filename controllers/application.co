@@ -23,16 +23,12 @@ angular.module('jf')
 	# wire $scope to Session
 	Session.applicationScope = $scope
 
+	$scope.$on "$locationChangeStart", handleLocationChange
+
 	function handleLocationChange(event, next, previous)
 
-
 		console.log "next ------>", next
-		if typeof next === 'string'
-			nextPath = new URI(next.replace('/#/',"/")).resource()
-		else if next.url
-			nextPath = new URI(next.url.replace('/#/',"/")).resource()
-		else
-			throw "Cannot parse next path to url"
+		nextPath = resolveNextPath(event,next)
 
 		if not nextPath.match(CONFIG.common.loginPath )
 		# if not Authorization.isAuthorized $scope.currentUser, nextPath
@@ -52,13 +48,23 @@ angular.module('jf')
 						console.log "redirect --> "+CONFIG.common.loginPath+"?redirectPath="+nextPath
 						$location.path(CONFIG.common.loginPath).search {redirectPath: encodeURIComponent(nextPath)}
 
+
+	function resolveNextPath(event,next)
+		if typeof next === 'string'
+			return new URI(next.replace('/#/',"/")).resource()
+
+		if next.url
+			nextPath = new URI(next.url.replace('/#/',"/")).resource()
+
+		throw "Cannot parse next path to url"
+
 	# $scope.$on "$locationChangeSuccess", !(event, next)->
 	# 	if redirect.length > 0
 			# $route.current = CONFIG.common.loginPath
 	# 		$location.path redirect.pop!
 
-	$scope.$on "$locationChangeStart", handleLocationChange
-	$scope.$on "$stateChangeStart", handleLocationChange
+
+
 
 	if CONFIG.connectionChecker?.enabled
 		ConnectionChecker.start()
