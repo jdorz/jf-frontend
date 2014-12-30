@@ -1,12 +1,13 @@
 angular.module('jf')
 .factory 'InfiniteScroll', (AjaxAction)->
-	InfiniteScroll = (targetName, limit, resultField || "results", columnField || "columns")->
+	InfiniteScroll = (targetName, limit, resultField || "results", columnField || "columns",isPageable || false)->
 		# url path name to resolve from config
 		this.targetName = targetName
 
 		this.limit = limit
 		this.resultField = resultField
 		this.columnField = columnField
+		this.isPageable = isPageable
 		# this.idColumnName = \id
 		this.searchRequest = {}
 
@@ -42,7 +43,10 @@ angular.module('jf')
 		this.columns = []
 		this.after = ''
 		this.searchRequest.limit = this.limit
-		this.searchRequest.offset = -this.limit
+		if this.isPageable
+			this.searchRequest.page = -1
+		else
+			this.searchRequest.offset = -this.limit
 
 	InfiniteScroll.prototype.getSearchRequest = -> @searchRequest
 
@@ -81,7 +85,10 @@ angular.module('jf')
 		if this.busy then return
 		this.busy = true
 
-		@searchRequest.offset += @searchRequest.limit
+		if @isPageable
+			@searchRequest.page++
+		else
+			@searchRequest.offset += @searchRequest.limit
 
 		@_onBeforeRequest @searchRequest
 
@@ -98,9 +105,13 @@ angular.module('jf')
 
 				items = data@@[@resultField].map ~> @sortByColumns(it)
 
-				if @searchRequest.offset is 0 and items.length is 0
+				if !@isPageable && @searchRequest.offset is 0 and items.length is 0
+					this.noResultsCallback?(data)
+				else if @isPageable && @searchRequest.page is 0 and items.length is 0
 					this.noResultsCallback?(data)
 
+				if items.length is 0
+					return @busy = true
 				_.each items, (item)~>
 					this.items.push item
 				this.busy = false
