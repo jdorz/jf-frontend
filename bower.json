@@ -1,8 +1,9 @@
 {
-  "name": "jf",
-  "version": "0.1.11",
+  "name": "jdf",
+  "version": "0.1.12",
   "authors": [
-    "Jan Swiecki <jan.swiecki@gmail.com>"
+    "Jan Swiecki <jan.swiecki@gmail.com>",
+    "Damian Orzepowski <damian.orzepowski@docusafe.pl>"
   ],
   "main": [
     "app.js",
