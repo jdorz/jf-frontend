@@ -1,13 +1,15 @@
 (function(){
   angular.module('jf').factory('InfiniteScroll', function(AjaxAction){
     var InfiniteScroll;
-    InfiniteScroll = function(targetName, limit, resultField, columnField){
+    InfiniteScroll = function(targetName, limit, resultField, columnField, isPageable){
       resultField || (resultField = "results");
       columnField || (columnField = "columns");
+      isPageable || (isPageable = false);
       this.targetName = targetName;
       this.limit = limit;
       this.resultField = resultField;
       this.columnField = columnField;
+      this.isPageable = isPageable;
       this.searchRequest = {};
       this._viaJson = false;
       this._onBeforeRequest = function(){};
@@ -41,7 +43,11 @@
       this.columns = [];
       this.after = '';
       this.searchRequest.limit = this.limit;
-      this.searchRequest.offset = -this.limit;
+      if (this.isPageable) {
+        this.searchRequest.page = -1;
+      } else {
+        this.searchRequest.offset = -this.limit;
+      }
     };
     InfiniteScroll.prototype.getSearchRequest = function(){
       return this.searchRequest;
@@ -78,7 +84,11 @@
         return;
       }
       this.busy = true;
-      this.searchRequest.offset += this.searchRequest.limit;
+      if (this.isPageable) {
+        this.searchRequest.page++;
+      } else {
+        this.searchRequest.offset += this.searchRequest.limit;
+      }
       this._onBeforeRequest(this.searchRequest);
       ajax = this._viaQueryParams
         ? AjaxAction().get(this.targetName, this.searchRequest)
@@ -91,10 +101,17 @@
         items = (data[key$ = this$.resultField] || (data[key$] = [])).map(function(it){
           return this$.sortByColumns(it);
         });
-        if (this$.searchRequest.offset === 0 && items.length === 0) {
+        if (!this$.isPageable && this$.searchRequest.offset === 0 && items.length === 0) {
           if (typeof this$.noResultsCallback == 'function') {
             this$.noResultsCallback(data);
           }
+        } else if (this$.isPageable && this$.searchRequest.page === 0 && items.length === 0) {
+          if (typeof this$.noResultsCallback == 'function') {
+            this$.noResultsCallback(data);
+          }
+        }
+        if (items.length === 0) {
+          return this$.busy = true;
         }
         _.each(items, function(item){
           return this$.items.push(item);
