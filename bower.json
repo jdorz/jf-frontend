@@ -37,6 +37,7 @@
     "tests"
   ],
   "dependencies": {
-    "ngInfiniteScroll": "1.0.0"
+    "ngInfiniteScroll": "1.0.0",
+    "lodash": "~3.1.0"
   }
 }

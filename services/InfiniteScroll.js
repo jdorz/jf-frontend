@@ -1,7 +1,7 @@
 (function(){
   angular.module('jf').factory('InfiniteScroll', function(AjaxAction){
     var InfiniteScroll;
-    InfiniteScroll = function(targetName, limit, resultField, columnField, isPageable){
+    InfiniteScroll = function(targetName, limit, resultField, columnField, isPageable, pathParams, searchQuery){
       resultField || (resultField = "results");
       columnField || (columnField = "columns");
       isPageable || (isPageable = false);
@@ -10,7 +10,9 @@
       this.resultField = resultField;
       this.columnField = columnField;
       this.isPageable = isPageable;
+      this.pathParams = pathParams;
       this.searchRequest = {};
+      _.merge(this.searchRequest, searchQuery);
       this._viaJson = false;
       this._onBeforeRequest = function(){};
       return this.reset();
@@ -91,7 +93,7 @@
       }
       this._onBeforeRequest(this.searchRequest);
       ajax = this._viaQueryParams
-        ? AjaxAction().get(this.targetName, this.searchRequest)
+        ? AjaxAction().get(this.targetName, this.searchRequest).withPathParams(this.pathParams)
         : !this._viaJson
           ? AjaxAction().post(this.targetName).withQueryParams(this.searchRequest)
           : AjaxAction().post(this.targetName, this.searchRequest);

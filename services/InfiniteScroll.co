@@ -1,6 +1,6 @@
 angular.module('jf')
 .factory 'InfiniteScroll', (AjaxAction)->
-	InfiniteScroll = (targetName, limit, resultField || "results", columnField || "columns",isPageable || false)->
+	InfiniteScroll = (targetName, limit, resultField || "results", columnField || "columns",isPageable || false, pathParams, searchQuery)->
 		# url path name to resolve from config
 		this.targetName = targetName
 
@@ -8,9 +8,10 @@ angular.module('jf')
 		this.resultField = resultField
 		this.columnField = columnField
 		this.isPageable = isPageable
+		this.pathParams = pathParams
 		# this.idColumnName = \id
 		this.searchRequest = {}
-
+		_.merge(this.searchRequest, searchQuery);
 		this._viaJson = false
 		this._onBeforeRequest = ->
 
@@ -93,7 +94,7 @@ angular.module('jf')
 		@_onBeforeRequest @searchRequest
 
 		ajax = if @_viaQueryParams
-			AjaxAction().get(this.targetName, @searchRequest)
+			AjaxAction().get(this.targetName, @searchRequest).withPathParams(@.pathParams)
 		else if not @_viaJson
 			AjaxAction().post(this.targetName).withQueryParams(@searchRequest)
 		else
